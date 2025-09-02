@@ -5,13 +5,28 @@ export default function SearchBar({ searchQuery, onSearch }) {
     return (
         <View style={styles.container}>
             <TextInput
-                style={styles.input}
-                placeholder="Buscar por título..."
-                // Exibe o valor atual da busca
+                style={styles.searchInput}
+                placeholder="Buscar despesas..."
                 value={searchQuery}
-                // Chama a função para atualizar a busca a cada letra digitada
                 onChangeText={onSearch}
+                clearButtonMode="while-editing" // iOS only
             />
         </View>
     );
 }
+
+const styles = StyleSheet.create({
+    container: {
+        padding: 16,
+        backgroundColor: '#f5f5f5',
+    },
+    searchInput: {
+        height: 40,
+        borderWidth: 1,
+        borderColor: '#ddd',
+        borderRadius: 8,
+        paddingHorizontal: 12,
+        backgroundColor: 'white',
+        fontSize: 16,
+    },
+});

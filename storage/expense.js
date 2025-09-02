@@ -6,11 +6,12 @@ const STORAGE_KEY = "@meuBolso/expenses";
 //Crud Despesas
 
 //Criando a despesa
-export function createExpense(title, dueDate) {
+export function createExpense(title, dueDate, amount) {
     const now = Date.now();
     return {
         id: generateUniqueId(),
         title,
+        amount,
         dueDate,
         done: false,
         createdAt: now,
@@ -58,18 +59,17 @@ export async function deleteExpense(expenseId) {
 }
 
 //Editando a despesa
-export async function updateExpense(expenseId, expense) {
+export async function updateExpense(expenseId, changes) {
     try {
         const expenses = await loadExpenses();
-        const updatedExpenses = expenses.map(task =>
+        const updatedExpenses = expenses.map(expense =>
             expense.id === expenseId
                 ? { ...expense, ...changes, updatedAt: Date.now() }
                 : expense
         );
         await saveExpenses(updatedExpenses);
         return updatedExpenses;
-    }
-    catch (e) {
+    } catch (e) {
         console.error("Erro ao editar despesa:", e);
         return [];
     }

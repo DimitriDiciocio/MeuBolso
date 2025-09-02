@@ -2,22 +2,22 @@ import React from 'react';
 import { Modal, View, Text, Button, StyleSheet } from 'react-native';
 
 export default function ModalConfirm({
-                                         visible,        // A prop que diz se ele está visível
-                                         task,           // A tarefa a ser deletada
-                                         onConfirm,      // A função a ser chamada ao confirmar
-                                         onCancel,       // A função a ser chamada ao cancelar
+                                         visible,
+                                         expense,      // Changed from 'task' to 'expense'
+                                         onConfirm,
+                                         onCancel,
                                      }) {
     return (
         <Modal
             animationType="fade"
             transparent={true}
             visible={visible}
-            onRequestClose={onCancel} // Para o botão de "voltar" do Android
+            onRequestClose={onCancel}
         >
             <View style={styles.centeredView}>
                 <View style={styles.modalView}>
                     <Text style={styles.modalText}>
-                        Tem certeza que deseja deletar a tarefa: "{task?.title}"?
+                        Tem certeza que deseja deletar a despesa: "{expense?.title}"?
                     </Text>
                     <View style={styles.buttonContainer}>
                         <Button title="Cancelar" onPress={onCancel} color="#666" />
@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.4)', // Fundo escurecido
+        backgroundColor: 'rgba(0, 0, 0, 0.4)',
     },
     modalView: {
         margin: 20,
@@ -59,5 +59,6 @@ const styles = StyleSheet.create({
     buttonContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
+        gap: 20,
     },
 });

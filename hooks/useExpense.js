@@ -1,45 +1,35 @@
+// useExpense.js
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import * as ExpenseStorage from '../storage/expense';
 
 export function useExpenses() {
-    // Estado para armazenar todas as tarefas brutas, sem filtro
     const [expenses, setExpenses] = useState([]);
-
-    // Estado para o filtro atual ('all', 'pending', 'completed')
-    const [filter, setFilter] = useState('all'); // [cite: 35]
-
-    // Estado para o termo da busca
-    const [query, setQuery] = useState(''); // [cite: 36]
-
-    // Estado para controlar o carregamento inicial
+    const [filter, setFilter] = useState('all');
+    const [query, setQuery] = useState('');
     const [loading, setLoading] = useState(true);
 
-    // Efeito para carregar as tarefas do AsyncStorage uma única vez
     useEffect(() => {
         async function loadData() {
-            const loadedExpenses = await ExpenseStorage.loadExpenses(); //
+            const loadedExpenses = await ExpenseStorage.loadExpenses();
             setExpenses(loadedExpenses);
             setLoading(false);
         }
         loadData();
     }, []);
 
-    // Função para adicionar uma nova tarefa
-    const addExpense = useCallback(async (title, dueDate) => {
-        const newExpense = ExpenseStorage.createExpense(title, dueDate);
+    const addExpense = useCallback(async (title, dueDate, amount) => {
+        const newExpense = ExpenseStorage.createExpense(title, dueDate, amount);
         const updatedExpenses = [...expenses, newExpense];
         setExpenses(updatedExpenses);
-        await ExpenseStorage.saveExpenses(updatedExpenses); // [cite: 106]
+        await ExpenseStorage.saveExpenses(updatedExpenses);
     }, [expenses]);
 
-    // Função para remover uma tarefa
-    const removeExpense = useCallback(async (ExpenseId) => {
+    const removeExpense = useCallback(async (expenseId) => {
         const updatedExpenses = expenses.filter(expense => expense.id !== expenseId);
         setExpenses(updatedExpenses);
-        await ExpenseStorage.saveExpenses(updatedExpenses); // [cite: 109]
+        await ExpenseStorage.saveExpenses(updatedExpenses);
     }, [expenses]);
 
-    // Função para editar uma tarefa existente
     const editExpense = useCallback(async (expenseId, changes) => {
         const updatedExpenses = expenses.map(expense =>
             expense.id === expenseId
@@ -47,10 +37,9 @@ export function useExpenses() {
                 : expense
         );
         setExpenses(updatedExpenses);
-        await ExpenseStorage.saveExpenses(updatedExpenses); // [cite: 107]
+        await ExpenseStorage.saveExpenses(updatedExpenses);
     }, [expenses]);
 
-    // Função para alternar o status 'done' de uma tarefa
     const toggleExpense = useCallback(async (expenseId) => {
         const updatedExpenses = expenses.map(expense =>
             expense.id === expenseId
@@ -58,36 +47,25 @@ export function useExpenses() {
                 : expense
         );
         setExpenses(updatedExpenses);
-        await ExpenseStorage.saveExpenses(updatedExpenses); // [cite: 108]
+        await ExpenseStorage.saveExpenses(updatedExpenses);
     }, [expenses]);
 
-    // Lógica de filtragem e busca com useMemo para otimização [cite: 41, 135]
     const filteredExpenses = useMemo(() => {
         let items = [...expenses];
-
-        // 1. Aplicar filtro de status
-        if (filter === 'pending') {
-            items = items.filter(expense => !expense.done);
-        } else if (filter === 'completed') {
-            items = items.filter(expense => expense.done);
-        }
-
-        // 2. Aplicar busca por título
+        if (filter === 'pending') items = items.filter(expense => !expense.done);
+        else if (filter === 'completed') items = items.filter(expense => expense.done);
         if (query.trim()) {
             items = items.filter(expense =>
                 expense.title.toLowerCase().includes(query.toLowerCase())
             );
         }
-
-        // Retorna a lista processada
         return items;
-    }, [expenses, filter, query]); // Recalcula apenas quando uma dessas dependências mudar
+    }, [expenses, filter, query]);
 
     const getTaskById = useCallback((id) => {
         return expenses.find(expense => expense.id === id);
     }, [expenses]);
 
-    // O hook expõe o estado e as funções para os componentes
     return {
         expenses,
         filteredExpenses,
